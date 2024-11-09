@@ -7,8 +7,6 @@ const Todolist = () => {
 
     ]);
 
-
-
     const addNewTask = (e) => {
         if (e.code === 'Enter') {
             if (!e.target.value) {
@@ -33,8 +31,6 @@ const Todolist = () => {
         temp[index].completed = !temp[index].completed;
         setTaskList([...temp]);
     };
-
-
 
     return (
         <div>
@@ -88,5 +84,4 @@ const Todolist = () => {
         </div>
     )
 }
-
 export default Todolist;
