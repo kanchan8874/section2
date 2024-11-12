@@ -3,13 +3,14 @@ import axios from 'axios'
 import { Result } from 'postcss'
 import React, { useEffect } from 'react'
 import { useState } from 'react';
+import toast from 'react-hot-toast';
 
 const ManageUser = () => {
     const[userList, setUserList] = useState([]);
+    
 
 
-
-    const FetchUsers =()=>{
+    const fetchUsers =()=>{
         axios.get('http://localhost:5000/user/getall')
         .then((result) =>{
             console.table(result.data);
@@ -20,18 +21,20 @@ const ManageUser = () => {
     }
     //hoks menagelife cycle of components example useeffect(),usestate()
     useEffect(() => {
-        FetchUsers();
+        fetchUsers();
     }, [])
 
     const deleteUser = (id) =>{
-        axios.delete
+        axios.delete('http://localhost:5000/user/delete/'+id)
+        .then((result) =>{
+            toast.success('user deleted successfully');
+            fetchUsers();
+        }).catch((err) =>{
+            console.log(err);
+            toast.error('failed to deleted user');
+        })
     }
     
- 
-
-
-
-
   return (
     <div className=''>
         <div className='container mx-auto py-10'>
@@ -60,7 +63,8 @@ const ManageUser = () => {
                                     <td className='p-3'>{user.city} </td>
                                     <td className='p-3'>{new Date(user.createdAt).toDateString()}</td>  
                                     <td className='p-3'>
-                                        <button className='bg-red-500 py-1 px-3 text-white rounded-full'>Delete</button>
+                                        <button onClick={() => { deleteUser(user._id) }}
+                                         className='bg-red-500 py-1 px-3 text-white rounded-full'>Delete</button>
                                     </td>
                                     <td className='p-3'>
                                         <button className='bg-blue-500 py-1 px-3 text-white rounded-full'>Update</button>

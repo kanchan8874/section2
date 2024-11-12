@@ -1,21 +1,31 @@
 'use client';
+import { IconCheck, IconLoader, IconLoader3 } from '@tabler/icons-react';
 import axios from 'axios';
 import { useFormik } from 'formik';
 import { useRouter } from 'next/navigation';
 import React from 'react'
 import toast from 'react-hot-toast';
 import * as Yup from 'yup';
+
 const SignupSchema = Yup.object().shape({
   firstName: Yup.string()
     .min(2, 'Too Short!')
     .max(50, 'Too Long!')
     .required('Required'),
   email: Yup.string().email('Invalid email').required('Required'),
+  password: Yup.string().required('password is requried')
+    .matches(/[a-z]/, 'lowercase letter is required')
+    .matches(/[A-Z]/, 'uppercase letter is required')
+    .matches(/[0-9]/, 'numeric letter is required')
+    .matches(/\w/, 'special character is required')
+    .min(8, 'minimum 8 characters are required'),
+  confirmPassword: Yup.string().required('please confirm password')
+    .oneOf([Yup.ref('password'), null], 'passwords must match')
 });
-
 const Signup = () => {
+  //initializing formik
 
-  const router =useRouter();
+  const router = useRouter();
 
   const signupForm = useFormik({
     initialValues: {
@@ -24,26 +34,28 @@ const Signup = () => {
       password: '',
       confirmPassword: ''
     },
-    onSubmit: (values) => {
+    onSubmit: (values, { resetForm }) => {
       console.log(values);
+      //send value to backend tbhi save hoga...
+      setTimeout(() => {
+        resetForm();
+
+      }, 2000);
+
+
 
       axios.post('http://localhost:5000/user/add', values)
         .then((result) => {
           toast.success('User added successfully');
           router.push('/login');
-
         }).catch((err) => {
           console.log(err);
-          toast.error(err?.response?.data?.message ||'some error occured');
+          toast.error(err?.response?.data?.message || 'some error occured');
 
         });
-
-
-
     },
     ValidationSchema: SignupSchema
   });
-
   return (
     <div className='max-w-xl mx-auto'>
       <div className="mt-7 bg-white border border-gray-200 rounded-xl shadow-sm dark:bg-neutral-900 dark:border-neutral-700">
@@ -97,6 +109,7 @@ const Signup = () => {
               Or
             </div>
             {/* Form */}
+            {/* apne from ko formik se connent kr rhe hai */}
             <form onSubmit={signupForm.handleSubmit}>
               <div className="grid gap-y-4">
                 {/* Form Group */}
@@ -105,7 +118,7 @@ const Signup = () => {
                     htmlFor="name"
                     className="block text-sm mb-2 dark:text-white"
                   >
-                    Name
+                    Full Name
                   </label>
                   <div className="relative">
                     <input
@@ -132,7 +145,7 @@ const Signup = () => {
                   </div>
                   {
                     (signupForm.errors.name && signupForm.touched.name) && (
-                      <p className=" text-xs text-red-600 mt-2" id="email-error">
+                      <p className=" text-xs text-red-600 mt-2" id="name-error">
                         {signupForm.errors.name}
                       </p>
 
@@ -140,8 +153,7 @@ const Signup = () => {
                   }
 
                 </div>
-                {/* End Form Group */}
-                {/* Form Group */}
+
                 <div>
                   <label
                     htmlFor="email"
@@ -172,9 +184,13 @@ const Signup = () => {
                       </svg>
                     </div>
                   </div>
-                  <p className="hidden text-xs text-red-600 mt-2" id="email-error">
-                    Please include a valid email address so we can get back to you
-                  </p>
+                  {
+                    (signupForm.errors.email && signupForm.touched.email) && (
+                      <p className=" text-xs text-red-600 mt-2" id="name-error">
+                        {signupForm.errors.email}
+                      </p>
+                    )
+                  }
                 </div>
                 {/* End Form Group */}
                 {/* Form Group */}
@@ -277,8 +293,10 @@ const Signup = () => {
                 {/* End Checkbox */}
                 <button
                   type="submit"
+                  disabled={signupForm.isSubmitting}
                   className="w-full py-3 px-4 inline-flex justify-center items-center gap-x-2 text-sm font-medium rounded-lg border border-transparent bg-blue-600 text-white hover:bg-blue-700 focus:outline-none focus:bg-blue-700 disabled:opacity-50 disabled:pointer-events-none"
                 >
+                  {signupForm.isSubmitting ? (<IconLoader3 className='animate-spin' />) : (< IconCheck />)}
                   Sign up
                 </button>
               </div>
@@ -290,5 +308,4 @@ const Signup = () => {
     </div>
   )
 }
-
 export default Signup;

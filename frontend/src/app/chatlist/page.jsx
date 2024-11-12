@@ -31,12 +31,11 @@ const Chatlist = () => {
             <div className='max-w-[80%] mx-auto' >
 
                 <p className='text-3xl'>{count}</p>
-                {/* <button className='border p-3'
-                    onClick={() => { setCount(count + 1); console.log(count); }}>Add count</button> */}
-                <div className='rounded border border-gray-300 shadow'>
-                    
 
-                    <div className='border-t border-gray-300 p-5'>
+                <div className='rounded border border-gray-300 shadow'>
+
+
+                    <div className='border-t border-gray-300 p-5 heigth-'>
 
                         {taskList.map((task, index) => {
                             return (
@@ -59,7 +58,7 @@ const Chatlist = () => {
                     <div className='p-5'>
                         <input
                             onKeyDown={addNewChat}
-                            placeholder='enter a task to add in your chatlist' type='text'
+                            placeholder='enter a chatlist' type='text'
                             className='w-full rounded bg-gray-200 p-5' />
                     </div>
                 </div>
